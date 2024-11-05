@@ -138,6 +138,32 @@ You can navigate to the Kibana web app and start exploring the data without logi
 >   - If you don't see any indexes then make sure to export some data first (e.g. deploy a process). The indexes of the records are created when the first record of this type is exported.
 > - Go to `Analytics > Discover` and select the index pattern.
 
+## Secure Elasticsearch
+
+The `docker-compose-es-secure.yaml` contains additional configuration to enable security in Elasticsearch and configures each app (Kibana, Zeebe, Operate, Tasklist) to connect to Elasticsearch using unique credentials. 
+
+This can be used to experiment with configuring Camunda apps to run without elasticsearch cluster level privileges. The scripts found inside the [camunda-8-init-and-backup](https://github.com/camunda-community-hub/camunda-8-init-and-backup) community project can be used to manually create ES objects. 
+
+1. Run the following to create the docker environment: 
+
+```
+docker compose -f docker-compose-es-secure.yaml up -d
+```
+
+2. Manually stop zeebe, operate, optimize, and tasklist.
+3. Set `kibana_system` password to allow kibana to connect: 
+
+```shell
+curl --location 'http://localhost:9200/_security/user/kibana_system/_password' \
+--header 'Content-Type: application/json' \
+--user elastic:camunda \
+--data '{
+    "password": "camunda"
+}'
+```
+4. Browse to kibana [http://localhost:5601](http://localhost:5601)
+5. Create es accounts named `zeebe`, `tasklist`, and `operate` via the Kibana interface. Set the password to `camunda`
+
 ## Desktop Modeler
 
 > :information_source: The Desktop Modeler is [open source, free to use](https://github.com/camunda/camunda-modeler).
