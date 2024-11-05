@@ -161,8 +161,82 @@ curl --location 'http://localhost:9200/_security/user/kibana_system/_password' \
     "password": "camunda"
 }'
 ```
-4. Browse to kibana [http://localhost:5601](http://localhost:5601)
-5. Create es accounts named `zeebe`, `tasklist`, and `operate` via the Kibana interface. Set the password to `camunda`
+4. Create `zeebe` role
+
+```shell
+curl --location 'http://localhost:9200/_security/role/zeebe-role' \
+--header 'Content-Type: application/json' \
+--user elastic:camunda \
+--data '{
+    "description": "Grants access to zeebe indices",
+    "cluster": [],
+    "indices": [
+        {
+            "names": [ "zeebe*" ],
+            "privileges": [
+                "create_index",
+                "delete_index",
+                "read",
+                "write",
+                "manage",
+                "manage_ilm"
+            ]
+        }
+    ]
+}'
+```
+
+5. Create `operate` role
+
+```shell
+curl --location 'http://localhost:9200/_security/role/operate-role' \
+--header 'Content-Type: application/json' \
+--user elastic:camunda \
+--data '{
+    "description": "Grants access to operate indices",
+    "cluster": [],
+    "indices": [
+        {
+            "names": [ "operate*" ],
+            "privileges": [
+                "create_index",
+                "delete_index",
+                "read",
+                "write",
+                "manage",
+                "manage_ilm"
+            ]
+        }
+    ]
+}'
+```
+
+6. Create `tasklist` role
+
+```shell
+curl --location 'http://localhost:9200/_security/role/tasklist-role' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic ZWxhc3RpYzpjYW11bmRh' \
+--data '{
+    "description": "Grants access to tasklist indices",
+    "cluster": [],
+    "indices": [
+        {
+            "names": [ "tasklist*" ],
+            "privileges": [
+                "create_index",
+                "delete_index",
+                "read",
+                "write",
+                "manage",
+                "manage_ilm"
+            ]
+        }
+    ]
+}'
+```
+
+7. Create es accounts named `zeebe`, `tasklist`, and `operate` via the Kibana interface. Set the password to `camunda`
 
 ## Desktop Modeler
 
